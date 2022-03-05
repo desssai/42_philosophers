@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/28 10:42:34 by ncarob            #+#    #+#             */
-/*   Updated: 2022/03/01 23:33:53 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/03/05 14:28:36 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ long long	ft_get_time(void)
 void	ft_say(const char *expression, t_philo *philo)
 {
 	pthread_mutex_lock(&philo->data->fd_mutex);
-	printf(expression, ft_get_time(), philo->id);
+	printf(expression, ft_get_time() - philo->data->start, philo->id);
 	pthread_mutex_unlock(&philo->data->fd_mutex);
 }
 

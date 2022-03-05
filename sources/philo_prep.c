@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/20 22:14:34 by ncarob            #+#    #+#             */
-/*   Updated: 2022/03/01 23:42:40 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/03/05 14:58:14 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,21 +105,28 @@ int	init_philos(t_data *data, t_fork **forks, t_philo ***philos)
 	return (0);
 }
 
-int	validate_arguments(int total_arguments, char **arguments, t_data **data)
+int	validate_arguments(int total_ag, char **ag, t_data **data)
 {
-	if (ft_strlen(arguments[0]) > 8 || ft_strlen(arguments[1]) > 10
-		|| ft_strlen(arguments[2]) > 10 || ft_strlen(arguments[3]) > 10)
-		return (1);
 	(*data) = (t_data *)malloc(sizeof(t_data));
 	if (!(*data))
 		return (1);
-	(*data)->total_philos = (int)ft_atoi(arguments[0]);
-	(*data)->t_to_sleep = ft_atoi(arguments[3]);
-	(*data)->t_to_die = ft_atoi(arguments[1]);
-	(*data)->t_to_eat = ft_atoi(arguments[2]);
+	(*data)->total_philos = (int)ft_atoi(ag[0]);
+	(*data)->ms_sleep = ft_atoi(ag[3]);
+	(*data)->ms_die = ft_atoi(ag[1]);
+	(*data)->ms_eat = ft_atoi(ag[2]);
+	(*data)->start = ft_get_time();
 	(*data)->number_to_eat = -1;
+	(*data)->limited = 0;
 	pthread_mutex_init(&(*data)->fd_mutex, NULL);
-	if (total_arguments == 5)
-		(*data)->number_to_eat = (int)ft_atoi(arguments[4]);
+	if (total_ag == 5 && !(*data)->limited++)
+		(*data)->number_to_eat = (int)ft_atoi(ag[4]);
+	if ((*data)->total_philos < 1 || (*data)->ms_sleep < 1
+		|| (*data)->ms_die < 1 || (*data)->ms_eat < 1
+		|| ((*data)->limited && (*data)->number_to_eat < 1))
+	{
+		free(*data);
+		*data = NULL;
+		return (1);
+	}
 	return (0);
 }

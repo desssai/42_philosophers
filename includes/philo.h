@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/20 17:36:59 by ncarob            #+#    #+#             */
-/*   Updated: 2022/03/01 23:39:21 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/03/05 14:56:47 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,10 +31,12 @@ typedef pthread_mutex_t	t_mutex;
 typedef struct s_data {
 	int			number_to_eat;
 	int			total_philos;
-	long long	t_to_sleep;
-	long long	t_to_eat;
-	long long	t_to_die;
 	t_mutex		fd_mutex;
+	long long	ms_sleep;
+	int			limited;
+	long long	ms_eat;
+	long long	ms_die;
+	long long	start;
 }	t_data;
 
 typedef struct s_fork {

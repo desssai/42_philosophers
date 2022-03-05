@@ -6,7 +6,7 @@
 /*   By: ncarob <ncarob@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/20 17:39:07 by ncarob            #+#    #+#             */
-/*   Updated: 2022/03/02 13:51:08 by ncarob           ###   ########.fr       */
+/*   Updated: 2022/03/05 15:02:01 by ncarob           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 static void	ft_eat(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->mutex);
-	philo->t_ate = ft_get_time();
+	philo->t_ate = ft_get_time() - philo->data->start;
 	if (philo->data->number_to_eat)
 		philo->num_ate++;
 	pthread_mutex_unlock(&philo->mutex);
@@ -37,14 +37,14 @@ static void	*eatsleep(void *data)
 		ft_say(I_TOOK_FORK, philo);
 		ft_eat(philo);
 		ft_say(IM_EATING, philo);
-		ft_usleep(philo->data->t_to_eat);
+		ft_usleep(philo->data->ms_eat);
 		pthread_mutex_unlock(&philo->big->mutex);
 		pthread_mutex_unlock(&philo->small->mutex);
 		ft_say(IM_SLEEPING, philo);
 		if (philo->data->number_to_eat != -1
 			&& philo->data->number_to_eat == philo->num_ate)
 			break ;
-		ft_usleep(philo->data->t_to_sleep);
+		ft_usleep(philo->data->ms_sleep);
 		ft_say(IM_THINKING, philo);
 	}
 	return (NULL);
@@ -53,7 +53,8 @@ static void	*eatsleep(void *data)
 static int	check_if_dead(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->mutex);
-	if (ft_get_time() - philo->t_ate > philo->data->t_to_die)
+	if (ft_get_time() - philo->data->start - philo->t_ate
+		> philo->data->ms_die)
 	{
 		if (philo->data->number_to_eat != -1
 			&& philo->data->number_to_eat == philo->num_ate)
@@ -62,7 +63,8 @@ static int	check_if_dead(t_philo *philo)
 			return (1);
 		}
 		pthread_mutex_lock(&philo->data->fd_mutex);
-		printf("%lld %d has died.\n", ft_get_time(), philo->id);
+		printf("%lld %d has died.\n", ft_get_time()
+			- philo->data->start, philo->id);
 		return (2);
 	}
 	pthread_mutex_unlock(&philo->mutex);
@@ -76,7 +78,7 @@ static int	serve_the_table(t_philo **philos)
 	i[0] = -1;
 	while (philos[++i[0]])
 	{
-		philos[i[0]]->t_ate = ft_get_time();
+		philos[i[0]]->t_ate = ft_get_time() - philos[0]->data->start;
 		pthread_create(&philos[i[0]]->thread_id, NULL, eatsleep, philos[i[0]]);
 		pthread_detach(philos[i[0]]->thread_id);
 	}
